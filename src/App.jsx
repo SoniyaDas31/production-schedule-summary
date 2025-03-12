@@ -95,7 +95,8 @@ function App() {
             ) : (
               <div className="schedules-grid">
                 {schedules.map(schedule => (
-                  <div key={schedule.id} className="schedule-card">
+                  <div key={schedule.id} className={`schedule-card ${schedule.nonChangeable ? 'non-changeable' : ''}`}>
+                    {schedule.nonChangeable && <span className="pill-indicator">Non-changeable</span>}
                     <h3>Order: {schedule.orderId}</h3>
                     <p>Machine: {schedule.machine}</p>
                     <p>Priority: {schedule.priority}</p>

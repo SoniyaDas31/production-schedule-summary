@@ -115,6 +115,22 @@
   padding: 1.5rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s;
+  position: relative;
+}
+
+.schedule-card.non-changeable {
+  background-color: #ffebee;
+}
+
+.schedule-card .pill-indicator {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 4px 12px;
+  background-color: #ef5350;
+  color: white;
+  border-radius: 20px;
+  font-size: 0.8rem;
 }
 
 .schedule-card:hover {
