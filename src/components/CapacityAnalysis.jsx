@@ -22,7 +22,7 @@ useEffect(() => {
     fetchAnalysis();
   }, []);
 
-  if (loading) return <p>Loading analysis...</p>;
+  if (loading) return <p>Loading machine analysis...</p>;
   if (error) return <p>Error: {error}</p>;
   if (!machineAnalysis) return <p className="no-data-text">No data available.</p>;
 
