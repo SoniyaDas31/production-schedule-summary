@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import './ScheduleForm.css';
-
+import axios from 'axios';
 const ScheduleForm = ({ onClose, onSubmit, editingSchedule }) => {
   const [formData, setFormData] = useState({
     orderId: '',
@@ -13,7 +13,25 @@ const ScheduleForm = ({ onClose, onSubmit, editingSchedule }) => {
     extraShift: false,
     outsourced: false
   });
+const [machines,setMachines]=useState([]);
+const [loading,setLoading]=useState(true);
+const [error,setError]=useState(null)
+  // Fetch machine list on component mount
+  useEffect(() => {
+    const fetchMachines = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/machine/list');  // Make sure this URL matches your backend route
+        setMachines(response.data);  // Set the machine data to state
+      } catch (err) {
+        console.error('Error fetching machines:', err);
+        setError('Error fetching machine list');
+      } finally {
+        setLoading(false);
+      }
+    };
 
+    fetchMachines();
+}, []);
   useEffect(() => {
     if (editingSchedule) {
       // Format dates for datetime-local input
@@ -73,7 +91,7 @@ const ScheduleForm = ({ onClose, onSubmit, editingSchedule }) => {
       <div className="modal-content">
         <h2>{editingSchedule ? 'Reschedule Order' : 'Add New Schedule'}</h2>
         <form onSubmit={handleSubmit}>
-          <div className="form-group">
+          {/* <div className="form-group">
             <label htmlFor="orderId">Order ID</label>
             <input
               type="text"
@@ -84,7 +102,7 @@ const ScheduleForm = ({ onClose, onSubmit, editingSchedule }) => {
               required
               disabled={editingSchedule}
             />
-          </div>
+          </div> */}
           <div className="form-group">
             <label htmlFor="machine">Machine</label>
             <select
@@ -94,10 +112,17 @@ const ScheduleForm = ({ onClose, onSubmit, editingSchedule }) => {
               onChange={handleChange}
               required
             >
-              <option value="">Select Machine</option>
+              {/* <option value="">Select Machine</option>
               <option value="machine1">Machine 1</option>
               <option value="machine2">Machine 2</option>
-              <option value="machine3">Machine 3</option>
+              <option value="machine3">Machine 3</option> */}
+                <option value="">Select Machine</option>
+              {/* Dynamically populate machine options */}
+              {machines.map((machine) => (
+                <option key={machine._id} value={machine._id}>
+                  {machine.machineName}  {/* Assuming the machine has a name field */}
+                </option>
+              ))}
             </select>
           </div>
           <div className="form-group">
@@ -187,7 +212,8 @@ const ScheduleForm = ({ onClose, onSubmit, editingSchedule }) => {
         </form>
       </div>
     </div>
-  );
+   
+ );
 };
 
 export default ScheduleForm;

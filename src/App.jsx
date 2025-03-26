@@ -1,55 +1,50 @@
-import { useState, useEffect } from 'react'
-import ScheduleForm from './components/ScheduleForm'
-import CapacityAnalysis from './components/CapacityAnalysis'
-import './App.css'
+import { useState, useEffect } from 'react';
+import ScheduleForm from './components/ScheduleForm';
+import CapacityAnalysis from './components/CapacityAnalysis';
+import axios from 'axios';
+import './App.css';
 
 function App() {
-  const [schedules, setSchedules] = useState([])
-  const [showForm, setShowForm] = useState(false)
-  const [activeTab, setActiveTab] = useState('schedules')
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
-  const [editingSchedule, setEditingSchedule] = useState(null)
+  const [schedules, setSchedules] = useState([]);
+  const [showForm, setShowForm] = useState(false);
+  const [activeTab, setActiveTab] = useState('schedules');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [editingSchedule, setEditingSchedule] = useState(null);
 
   useEffect(() => {
-    fetchSchedules()
-  }, [])
+    fetchSchedules();
+  }, []);
 
   const fetchSchedules = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/schedules')
-      if (!response.ok) throw new Error('Failed to fetch schedules')
-      const data = await response.json()
-      setSchedules(data)
+      const response = await axios.get('http://localhost:5000/get/schedules');
+      setSchedules(response.data);  // `data` is the response body
     } catch (err) {
-      setError(err.message)
+      setError(err.message);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleAddSchedule = async (newSchedule) => {
     try {
       setError(null);
       const url = editingSchedule
-        ? `http://localhost:5000/api/schedules/${editingSchedule._id}`
-        : 'http://localhost:5000/api/schedules';
+        ? `http://localhost:5000/edit/schedule/${editingSchedule._id}`
+        : 'http://localhost:5000/new/schedule';
       const method = editingSchedule ? 'PUT' : 'POST';
 
-      const response = await fetch(url, {
+      const response = await axios({
         method,
+        url,
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(newSchedule),
+        data: newSchedule,
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to save schedule');
-      }
-
-      const savedSchedule = await response.json();
+      const savedSchedule = response.data;  // `data` is the response body
       setSchedules(prev => 
         editingSchedule
           ? prev.map(s => s._id === editingSchedule._id ? savedSchedule : s)
@@ -62,6 +57,7 @@ function App() {
       alert('Error saving schedule: ' + err.message);
     }
   };
+
   return (
     <div className="app-container">
       <header className="app-header">
@@ -95,9 +91,9 @@ function App() {
             ) : (
               <div className="schedules-grid">
                 {schedules.map(schedule => (
-                  <div key={schedule.id} className={`schedule-card ${schedule.nonChangeable ? 'non-changeable' : ''}`}>
+                  <div key={schedule._id} className={`schedule-card ${schedule.isNonChangeable ? 'non-changeable' : ''}`}>
                     {schedule.nonChangeable && <span className="pill-indicator">Non-changeable</span>}
-                    <h3>Order: {schedule.orderId}</h3>
+                    {/* <h3>Order: {schedule.orderId}</h3> */}
                     <p>Machine: {schedule.machine}</p>
                     <p>Priority: {schedule.priority}</p>
                     <p>Start: {new Date(schedule.startDate).toLocaleString()}</p>
@@ -126,7 +122,7 @@ function App() {
       </main>
       {showForm && <ScheduleForm onClose={() => setShowForm(false)} onSubmit={handleAddSchedule} />}
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
