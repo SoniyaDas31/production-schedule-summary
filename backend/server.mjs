@@ -1,4 +1,5 @@
 const express = require('express');
+<<<<<<< HEAD:src/server.js
 const mongoose = require('mongoose');
 const cors = require('cors');
 const connectDB=require( './config/db.js');
@@ -9,6 +10,14 @@ const scheduleRouter= require('./routers/schedule.js')
 const analyzeRouter=require('./routers/machineCapacity.js')
 const machineRouter=require('./routers/machineRoutes.js')
 require('dotenv').config();
+=======
+const cors = require('cors');
+const dotenv = require('dotenv');
+const connectDB = require('./config/db');
+const Schedule = require('./models/Schedule');
+
+dotenv.config();
+>>>>>>> c50d635cc7bfecea3dd53b0255c68f1f7666cac7:backend/server.mjs
 
 const app = express();
 
